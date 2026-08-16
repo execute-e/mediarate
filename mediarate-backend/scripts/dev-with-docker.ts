@@ -57,7 +57,9 @@ async function startDocker() {
   try {
     await runCommand('docker compose', [
       '-f',
-      'docker-compose.backend.yml',
+      'docker-compose.dev.yml',
+      '--env-file',
+      '.env.development',
       'up',
       '-d',
     ]);
@@ -111,7 +113,9 @@ async function stopDocker(): Promise<void> {
   try {
     await runCommand('docker compose', [
       '-f',
-      'docker-compose.local.yml',
+      'docker-compose.dev.yml',
+      '--env-file',
+      '.env.development',
       'down',
     ]);
     console.log('Docker containers stopped');

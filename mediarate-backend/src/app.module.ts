@@ -6,6 +6,7 @@ import { IS_DEV_ENV } from './shared/utils/is-dev';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      envFilePath: '.env.development',
       isGlobal: true,
       ignoreEnvFile: !IS_DEV_ENV,
     }),

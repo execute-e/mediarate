@@ -2,8 +2,6 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "commonjs",
-    "moduleResolution": "node",
-    "ignoreDeprecations": "6.0",
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "isolatedModules": true,
@@ -26,6 +24,6 @@
     "outDir": "./dist",
     "rootDir": "./"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "scripts/**/*", "prisma.config.ts"],
   "exclude": ["dist", "node_modules"]
 }

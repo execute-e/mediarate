@@ -11,7 +11,7 @@ export class PrismaService
 {
   constructor(private readonly config: ConfigService) {
     const pool = new Pool({
-      connectionString: config.getOrThrow<string>('DATABASE_URL'),
+      connectionString: config.getOrThrow<string>('DB_URL'),
     });
 
     const adapter = new PrismaPg(pool);

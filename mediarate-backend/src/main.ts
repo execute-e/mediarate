@@ -2,12 +2,15 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
 
   const PORT = process.env.PORT ?? 3000;
+
+  app.use(cookieParser());
 
   // Auto-transform payloads into DTO instances
   app.useGlobalPipes(
@@ -22,6 +25,8 @@ async function bootstrap() {
     // allows to provide cookies and authorization headers in requests
     credentials: true,
   });
+
+  app.setGlobalPrefix('api');
 
   app.enableVersioning({
     type: VersioningType.URI,

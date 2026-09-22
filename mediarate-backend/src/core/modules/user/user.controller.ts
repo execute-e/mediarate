@@ -1,16 +1,13 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { UserRole } from '@/generated/prisma/enums';
+import { Auth } from '@/shared/decorators/auth.decorator';
 
 @Controller('user')
 export class UserController {
   public constructor(private readonly userService: UserService) {}
 
-  @Post()
-  public async create(@Body() dto: CreateUserDto) {
-    return this.userService.create(dto);
-  }
-
+  @Auth(UserRole.ADMIN)
   @Get()
   public async findAll() {
     return this.userService.findAll();

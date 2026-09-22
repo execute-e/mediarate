@@ -1,8 +1,7 @@
 import {
   createParamDecorator,
   ExecutionContext,
-  HttpException,
-  HttpStatus,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { REFRESH_TOKEN_COOKIE_NAME } from '../const/cookies';
@@ -13,10 +12,7 @@ export const RefreshToken = createParamDecorator(
     const refreshToken = req.cookies[REFRESH_TOKEN_COOKIE_NAME];
 
     if (!refreshToken) {
-      throw new HttpException(
-        'Refresh token not found',
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw new UnauthorizedException('Refresh token not found');
     }
 
     return refreshToken;

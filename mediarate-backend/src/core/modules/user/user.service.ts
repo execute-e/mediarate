@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from './user.respository';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/request/create-user.dto';
 import { UserRole } from '@/generated/prisma/enums';
 
 @Injectable()

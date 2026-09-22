@@ -1,8 +1,14 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateUserDto } from '../../user/dto/create-user.dto';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { CreateUserDto } from '../../user/dto/request/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UserService } from '../../user/user.service';
-import { LoginDto } from '../dto/login.dto';
+import { LoginDto } from '../dto/request/login.dto';
 import { UserAuthPayload } from '../../jwt/types/user-auth-payload';
 import { PASSWORD_CRYPT_SALT } from '../const/passwd';
 import { RefreshTokenService } from './refresh-token.service';
@@ -38,17 +44,11 @@ export class AuthService {
     ]);
 
     if (email) {
-      throw new HttpException(
-        'User with this email is already exists',
-        HttpStatus.CONFLICT,
-      );
+      throw new ConflictException('User with this email is already exists');
     }
 
     if (username) {
-      throw new HttpException(
-        'User with this username is already exists',
-        HttpStatus.CONFLICT,
-      );
+      throw new ConflictException('User with this username is already exists');
     }
 
     const hashedPassword = await bcrypt.hash(dto.password, PASSWORD_CRYPT_SALT);
@@ -65,19 +65,13 @@ export class AuthService {
     const user = await this.userService.findOneByUsername(dto.username);
 
     if (!user) {
-      throw new HttpException(
-        'User with this username does not exist',
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException('User with this username does not exist');
     }
 
     const isPasswordValid = await bcrypt.compare(dto.password, user.password);
 
     if (!isPasswordValid) {
-      throw new HttpException(
-        'Invalid username or password!',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new BadRequestException('Invalid username or password!');
     }
 
     return this.createSession(user);
@@ -90,12 +84,12 @@ export class AuthService {
   public async refresh(refreshToken: string) {
     const payload = await this.refreshTokenService.validate(refreshToken);
     if (!payload) {
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+      throw new UnauthorizedException('Unauthorized');
     }
 
     const user = await this.userService.findOneById(payload.userId);
     if (!user) {
-      throw new HttpException('User no longer exists', HttpStatus.UNAUTHORIZED);
+      throw new UnauthorizedException('User no longer exists');
     }
 
     const { refreshToken: newRefreshToken, accessToken: newAccessToken } =

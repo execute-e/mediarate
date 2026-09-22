@@ -1,0 +1,4 @@
+export const REFRESH_TOKEN_COOKIE_NAME = process.env.REFRESH_TOKEN_COOKIE_NAME!;
+export const REFRESH_TOKEN_MAX_AGE_SECONDS = Number(
+  process.env.REFRESH_TOKEN_MAX_AGE_SECONDS,
+);

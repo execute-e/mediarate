@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import cookieParser from 'cookie-parser';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -32,6 +33,17 @@ async function bootstrap() {
     type: VersioningType.URI,
     prefix: 'v',
     defaultVersion: '1',
+  });
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Mediarate API')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('docs', app, document, {
+    useGlobalPrefix: true,
   });
 
   await app.listen(PORT);

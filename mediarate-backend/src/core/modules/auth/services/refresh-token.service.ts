@@ -7,8 +7,6 @@ import {
   REFRESH_TOKEN_EXPIRES_AT,
 } from '../const/tokens';
 import { UserAuthPayload } from '../../jwt/types/user-auth-payload';
-
-// refresh-token.service.ts
 @Injectable()
 export class RefreshTokenService {
   public constructor(

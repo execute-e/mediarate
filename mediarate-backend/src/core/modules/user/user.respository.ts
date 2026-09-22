@@ -1,6 +1,6 @@
 import { PrismaService } from '@/config/db/PrismaService/prisma.service';
 import { Prisma } from '@/generated/prisma/client';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class UserRepository {
@@ -58,10 +58,7 @@ export class UserRepository {
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         if (e.code === 'P2025') {
-          throw new HttpException(
-            `User with ID: ${id} not found`,
-            HttpStatus.NOT_FOUND,
-          );
+          throw new NotFoundException(`User with ID: ${id} not found`);
         }
       }
       throw e;
@@ -76,10 +73,7 @@ export class UserRepository {
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         if (e.code === 'P2025') {
-          throw new HttpException(
-            `User with ID: ${id} not found`,
-            HttpStatus.NOT_FOUND,
-          );
+          throw new NotFoundException(`User with ID: ${id} not found`);
         }
       }
       throw e;

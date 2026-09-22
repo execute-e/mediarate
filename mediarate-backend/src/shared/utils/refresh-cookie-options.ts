@@ -4,7 +4,7 @@ import { CookieOptions } from 'express';
 export const REFRESH_TOKEN_COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
   sameSite: 'none',
-  secure: process.env.NODE_ENV === 'development',
+  secure: process.env.NODE_ENV === 'production',
   path: '/',
   domain: process.env.COOKIE_DOMAIN,
   maxAge: REFRESH_TOKEN_EXPIRES_AT,

@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
 interface AuthStore {
   accessToken: string | null;
@@ -7,13 +6,8 @@ interface AuthStore {
   clearAccessToken: () => void;
 }
 
-export const useAuthStore = create<AuthStore>()(
-  persist(
-    (set) => ({
-      accessToken: null,
-      setAccessToken: (accessToken) => set({ accessToken }),
-      clearAccessToken: () => set({ accessToken: null }),
-    }),
-    { name: "mediarate-auth-storage" },
-  ),
-);
+export const useAuthStore = create<AuthStore>()((set) => ({
+  accessToken: null,
+  setAccessToken: (accessToken) => set({ accessToken }),
+  clearAccessToken: () => set({ accessToken: null }),
+}));

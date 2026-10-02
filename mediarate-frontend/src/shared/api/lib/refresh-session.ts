@@ -1,0 +1,47 @@
+import { NEST_API_URL } from "../config";
+import { REFRESH_TOKEN_COOKIE_NAME } from "../const/cookies-const";
+import { extractCookieValue } from "@/src/shared/lib/cookie/cookie-utils";
+
+export type RefreshSessionResult =
+  | { ok: true; accessToken: string; refreshToken: string }
+  | { ok: false; status: number; body: unknown; clearCookies: boolean };
+
+export async function refreshSession(
+  refreshToken: string,
+): Promise<RefreshSessionResult> {
+  const nestRes = await fetch(`${NEST_API_URL}auth/refresh`, {
+    method: "POST",
+    headers: { Cookie: `${REFRESH_TOKEN_COOKIE_NAME}=${refreshToken}` },
+  });
+
+  if (!nestRes.ok) {
+    const body = await nestRes.json().catch(() => ({
+      statusCode: nestRes.status,
+      message: nestRes.statusText || "Upstream error",
+      error: "Bad Gateway",
+    }));
+    return { ok: false, status: nestRes.status, body, clearCookies: true };
+  }
+
+  const data: { accessToken: string } = await nestRes.json();
+
+  const newRefreshToken = nestRes.headers
+    .getSetCookie()
+    .map((header) => extractCookieValue(header, REFRESH_TOKEN_COOKIE_NAME))
+    .find((value): value is string => value !== null);
+
+  if (!newRefreshToken) {
+    return {
+      ok: false,
+      status: 502,
+      body: {
+        statusCode: 502,
+        message: "Auth service did not return a session",
+        error: "Bad Gateway",
+      },
+      clearCookies: false,
+    };
+  }
+
+  return { ok: true, accessToken: data.accessToken, refreshToken: newRefreshToken };
+}

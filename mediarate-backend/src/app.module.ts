@@ -5,6 +5,7 @@ import { IS_DEV_ENV } from './shared/utils/is-dev';
 import { UserModule } from './core/modules/user/user.module';
 import { MyJwtModule } from './core/modules/jwt/my-jwt.module';
 import { AuthModule } from './core/modules/auth/auth.module';
+import { StorageModule } from './core/modules/storage/storage.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { AuthModule } from './core/modules/auth/auth.module';
     UserModule,
     MyJwtModule,
     AuthModule,
+    StorageModule,
   ],
 })
 export class AppModule {}

@@ -1,3 +1,4 @@
+import { MaybePromise } from "../../types/promises-types";
 import { ApiError } from "./api-error";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -12,23 +13,18 @@ interface JsonFetchWrapperParams {
 }
 
 interface AuthOptions {
-  getAuthHeader?: () => Record<string, string> | undefined;
-  onUnauthorized?: () => Promise<void>;
+  getToken: () => MaybePromise<string | null | undefined>;
+  onUnauthorized?: () => MaybePromise<string | null | undefined>;
 }
 
 const buildHeaders = (
   json: unknown,
   userHeaders?: HeadersInit,
-  authHeader?: Record<string, string>,
+  token?: string | null,
 ) => {
-  const headers = new Headers(
-    json ? { "Content-Type": "application/json" } : undefined,
-  );
-
-  if (authHeader) {
-    new Headers(authHeader).forEach((value, key) => headers.set(key, value));
-  }
-
+  const headers = new Headers();
+  if (json !== undefined) headers.set("Content-Type", "application/json");
+  if (token) headers.set("Authorization", `Bearer ${token}`);
   if (userHeaders) {
     new Headers(userHeaders).forEach((value, key) => headers.set(key, value));
   }
@@ -37,24 +33,33 @@ const buildHeaders = (
 };
 
 async function jsonFetchWrapper<T>(
-  { baseUrl, path, method, options = {}, isRetry = false }: JsonFetchWrapperParams,
-  authOptions?: AuthOptions,
+  {
+    baseUrl,
+    path,
+    method,
+    options = {},
+    isRetry = false,
+  }: JsonFetchWrapperParams,
+  auth?: AuthOptions,
 ): Promise<T> {
   const { headers, body, json, ...rest } = options;
+  const token = await auth?.getToken();
 
   const res = await fetch(`${baseUrl}${path}`, {
     ...rest,
-    headers: buildHeaders(json, headers, authOptions?.getAuthHeader?.()),
+    headers: buildHeaders(json, headers, token),
     body: json ? JSON.stringify(json) : body,
     method,
   });
 
-  if (res.status === 401 && authOptions?.onUnauthorized && !isRetry) {
-    await authOptions.onUnauthorized();
-    return jsonFetchWrapper<T>(
-      { baseUrl, path, method, options, isRetry: true },
-      authOptions,
-    );
+  if (res.status === 401 && auth?.onUnauthorized && !isRetry) {
+    const freshToken = await auth.onUnauthorized();
+    if (freshToken) {
+      return jsonFetchWrapper<T>(
+        { baseUrl, path, method, options, isRetry: true },
+        auth,
+      );
+    }
   }
 
   if (!res.ok) {

@@ -8,4 +8,5 @@ export const ROUTES = {
   apiRefresh: () => "/auth/refresh",
 
   auth: () => "/auth",
+  profile: (username: string) => `/user/${username}`,
 };

@@ -13,11 +13,75 @@ export interface paths {
         };
         get: operations["UserController_findAll_v1"];
         put?: never;
-        post: operations["UserController_create_v1"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/user/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["UserController_getProfile_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/user/profile/{username}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["UserController_getUserProfile_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/user/avatar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["UserController_updateAvatar_v1"];
+        trace?: never;
+    };
+    "/api/v1/user/banner": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["UserController_updateBanner_v1"];
         trace?: never;
     };
     "/api/v1/auth/register": {
@@ -88,6 +152,53 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        UserReviewResponseDto: {
+            id: string;
+            title: string;
+            content: string;
+            rating: number;
+            userId: string;
+            mediaId: string;
+        };
+        UserSessionResponseDto: {
+            id: string;
+            token: string;
+            userId: string;
+            /** Format: date-time */
+            expiresAt: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            revokedAt: string | null;
+        };
+        UserPrivateProfileResponseDto: {
+            id: string;
+            username: string;
+            avatarUrl: string | null;
+            bannerUrl: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            reviews: components["schemas"]["UserReviewResponseDto"][];
+            email: string;
+            /** @enum {string} */
+            role: "ADMIN" | "USER";
+            refreshTokens: components["schemas"]["UserSessionResponseDto"][];
+        };
+        UserPublicProfileResponseDto: {
+            id: string;
+            username: string;
+            avatarUrl: string | null;
+            bannerUrl: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            reviews: components["schemas"]["UserReviewResponseDto"][];
+        };
+        AvatarResponseDto: {
+            avatarUrl: string;
+        };
+        BannerResponseDto: {
+            bannerUrl: string;
+        };
         CreateUserDto: {
             username: string;
             password: string;
@@ -99,6 +210,12 @@ export interface components {
             username: string;
             /** @enum {string} */
             role: "ADMIN" | "USER";
+            avatarUrl: string;
+            bannerUrl: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
         };
         AuthResponse: {
             user: components["schemas"]["UserResponseDto"];
@@ -134,24 +251,85 @@ export interface operations {
             };
         };
     };
-    UserController_create_v1: {
+    UserController_getProfile_v1: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateUserDto"];
-            };
-        };
+        requestBody?: never;
         responses: {
-            201: {
+            /** @description Profile received */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["UserPrivateProfileResponseDto"];
+                };
+            };
+        };
+    };
+    UserController_getUserProfile_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                username: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Profile received */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserPublicProfileResponseDto"];
+                };
+            };
+        };
+    };
+    UserController_updateAvatar_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Avatar updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AvatarResponseDto"];
+                };
+            };
+        };
+    };
+    UserController_updateBanner_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Banner updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BannerResponseDto"];
+                };
             };
         };
     };

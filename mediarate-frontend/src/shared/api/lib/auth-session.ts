@@ -2,7 +2,12 @@ import { NextResponse } from "next/server";
 import { NEST_API_URL } from "../config";
 import { extractCookieValue } from "@/src/shared/lib/cookie/cookie-utils";
 import { Schema } from "./api-types";
-import { REFRESH_TOKEN_COOKIE_NAME, REFRESH_TOKEN_MAX_AGE_SECONDS } from "../const/cookies-const";
+import {
+  ACCESS_TOKEN_COOKIE_NAME,
+  ACCESS_TOKEN_COOKIE_OPTIONS,
+  REFRESH_TOKEN_COOKIE_NAME,
+  REFRESH_TOKEN_COOKIE_OPTIONS,
+} from "../const/cookies-const";
 
 export async function proxyAuthSession(nestPath: string, dto: unknown) {
   const nestRes = await fetch(`${NEST_API_URL}${nestPath}`, {
@@ -30,6 +35,8 @@ export async function proxyAuthSession(nestPath: string, dto: unknown) {
     .map((header) => extractCookieValue(header, REFRESH_TOKEN_COOKIE_NAME))
     .find((value): value is string => value !== null);
 
+  const accessTokenFromNest = data.accessToken;
+
   if (!refreshTokenFromNest) {
     return NextResponse.json(
       {
@@ -43,13 +50,17 @@ export async function proxyAuthSession(nestPath: string, dto: unknown) {
 
   const response = NextResponse.json(data, { status: nestRes.status });
 
-  response.cookies.set(REFRESH_TOKEN_COOKIE_NAME, refreshTokenFromNest, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/api/auth",
-    maxAge: REFRESH_TOKEN_MAX_AGE_SECONDS,
-  });
+  response.cookies.set(
+    REFRESH_TOKEN_COOKIE_NAME,
+    refreshTokenFromNest,
+    REFRESH_TOKEN_COOKIE_OPTIONS,
+  );
+
+  response.cookies.set(
+    ACCESS_TOKEN_COOKIE_NAME,
+    accessTokenFromNest,
+    ACCESS_TOKEN_COOKIE_OPTIONS,
+  );
 
   return response;
 }

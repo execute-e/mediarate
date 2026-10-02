@@ -20,6 +20,8 @@ model User {
   role          UserRole
   refreshTokens RefreshToken[]
   reviews       Review[]
+  avatarUrl     String?
+  bannerUrl     String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

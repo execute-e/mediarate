@@ -1,7 +1,29 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+  Controller,
+  FileTypeValidator,
+  Get,
+  MaxFileSizeValidator,
+  Param,
+  ParseFilePipe,
+  Patch,
+  Req,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Request } from 'express';
 import { UserService } from './user.service';
 import { UserRole } from '@/generated/prisma/enums';
 import { Auth } from '@/shared/decorators/auth.decorator';
+import { UploadedFile as UploadedImageFile } from '../storage/types/storage.types';
+import { IMAGE_MIME_TYPE_REGEX, MAX_IMAGE_SIZE } from './const/user.const';
+import { ApiOkResponse } from '@nestjs/swagger';
+import {
+  UserPrivateProfileResponseDto,
+  UserPublicProfileResponseDto,
+} from './dto/response/user-response.dto';
+import { AvatarResponseDto } from './dto/response/avatar-response.dto';
+import { BannerResponseDto } from './dto/response/banner-response.dto';
 
 @Controller('user')
 export class UserController {
@@ -13,8 +35,66 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  // @Patch(':id')
-  // public async changeUsername(username: string) {
-  //   return this.userService.updateUsername(id, username);
-  // }
+  @Auth()
+  @Get('profile')
+  @ApiOkResponse({
+    type: UserPrivateProfileResponseDto,
+    description: 'Profile received',
+  })
+  public async getProfile(@Req() req: Request) {
+    return this.userService.getUserProfileById(req.user.userId);
+  }
+
+  @Get('profile/:username')
+  @ApiOkResponse({
+    type: UserPublicProfileResponseDto,
+    description: 'Profile received',
+  })
+  public async getUserProfile(@Param('username') username: string) {
+    return this.userService.getUserProfile(username);
+  }
+
+  @Auth()
+  @Patch('avatar')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOkResponse({
+    type: AvatarResponseDto,
+    description: 'Avatar updated',
+  })
+  public async updateAvatar(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: MAX_IMAGE_SIZE }),
+          new FileTypeValidator({ fileType: IMAGE_MIME_TYPE_REGEX }),
+        ],
+      }),
+    )
+    file: UploadedImageFile,
+    @Req() req: Request,
+  ) {
+    return this.userService.updateAvatar(req.user.userId, file);
+  }
+
+  @Auth()
+  @Patch('banner')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOkResponse({
+    type: BannerResponseDto,
+    description: 'Banner updated',
+  })
+  public async updateBanner(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: MAX_IMAGE_SIZE }),
+          new FileTypeValidator({ fileType: IMAGE_MIME_TYPE_REGEX }),
+        ],
+      }),
+    )
+    file: UploadedImageFile,
+    @Req() req: Request,
+  ) {
+    return this.userService.updateBanner(req.user.userId, file);
+  }
 }

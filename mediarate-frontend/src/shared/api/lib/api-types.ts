@@ -1,4 +1,4 @@
-import { components, paths } from "../schema";
+import { components, paths } from "../types/schema";
 
 export type Schema<T extends keyof components["schemas"]> =
   components["schemas"][T];

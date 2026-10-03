@@ -4,9 +4,12 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
+import { UPLOADS_ROOT } from './core/modules/storage/const/storage.const';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const config = app.get(ConfigService);
 
   const PORT = process.env.PORT ?? 3000;
@@ -17,6 +20,8 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
     }),
   );
 
@@ -33,6 +38,10 @@ async function bootstrap() {
     type: VersioningType.URI,
     prefix: 'v',
     defaultVersion: '1',
+  });
+
+  app.useStaticAssets(join(UPLOADS_ROOT, '..', 'uploads'), {
+    prefix: '/uploads',
   });
 
   const swaggerConfig = new DocumentBuilder()

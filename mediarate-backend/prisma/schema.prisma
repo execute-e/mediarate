@@ -16,10 +16,13 @@ model User {
   id            String         @id @default(uuid())
   email         String         @unique
   username      String         @unique
+  displayName   String
   password      String
   role          UserRole
   refreshTokens RefreshToken[]
   reviews       Review[]
+  avatarUrl     String?
+  bannerUrl     String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

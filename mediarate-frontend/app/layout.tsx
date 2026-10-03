@@ -4,6 +4,11 @@ import "./globals.css";
 import { cn } from "@/src/shared/lib/cookie/cookie-utils";
 import { Providers } from "./providers";
 import { AppPageLayout } from "./app-layout";
+import { AccessTokenSync } from "@/src/app/providers/access-token-sync/access-token-sync";
+import { cookies } from "next/headers";
+import { ACCESS_TOKEN_COOKIE_NAME } from "@/src/shared/api/const/cookies-const";
+import { getSession } from "@/src/entities/session";
+import { orNull } from "@/src/shared/lib/utils/promise-utils";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -22,7 +27,10 @@ export const metadata: Metadata = {
   description: "Mediarate",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const accessToken = (await cookies()).get(ACCESS_TOKEN_COOKIE_NAME)?.value;
+  const userData = await orNull(getSession());
+
   return (
     <html
       lang="en"
@@ -36,10 +44,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       )}
       suppressHydrationWarning
     >
+      <head>
+        {process.env.NODE_ENV === "development" && (
+          <meta name="darkreader-lock" />
+        )}
+      </head>
       <body className="min-h-full flex flex-col">
         <div id="root">
+          <AccessTokenSync token={accessToken} />
           <Providers>
-            <AppPageLayout>{children}</AppPageLayout>
+            <AppPageLayout userData={userData}>{children}</AppPageLayout>
           </Providers>
         </div>
       </body>

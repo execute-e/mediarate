@@ -49,9 +49,9 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         fallback ?? (
           <div className="mt-24 flex flex-col items-center justify-center py-12 text-center">
-            <h2 className="mb-2 text-xl font-semibold">Произошла ошибка</h2>
+            <h2 className="mb-2 жtext-xl font-semibold">Произошла ошибка</h2>
             {process.env.NODE_ENV === "development" && (
-              <p className="mb-4 text-gray-500">{error.message}</p>
+              <p className="mb-4">{error.message}</p>
             )}
             <Button onClick={this.resetErrorBoundary}>Попробовать снова</Button>
           </div>

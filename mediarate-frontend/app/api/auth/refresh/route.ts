@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { NEST_API_URL } from "@/src/shared/api/config";
 import {
+  ACCESS_TOKEN_COOKIE_NAME,
+  ACCESS_TOKEN_COOKIE_OPTIONS,
   REFRESH_TOKEN_COOKIE_NAME,
-  REFRESH_TOKEN_MAX_AGE_SECONDS,
+  REFRESH_TOKEN_COOKIE_OPTIONS,
 } from "@/src/shared/api/const/cookies-const";
-import { extractCookieValue } from "@/src/shared/lib/cookie/cookie-utils";
+import { refreshSession } from "@/src/shared/api/lib/refresh-session";
 
 export async function POST() {
   const refreshToken = (await cookies()).get(REFRESH_TOKEN_COOKIE_NAME)?.value;
@@ -21,49 +22,35 @@ export async function POST() {
     );
   }
 
-  const nestRes = await fetch(`${NEST_API_URL}auth/refresh`, {
-    method: "POST",
-    headers: { Cookie: `${REFRESH_TOKEN_COOKIE_NAME}=${refreshToken}` },
-  });
+  const result = await refreshSession(refreshToken);
 
-  if (!nestRes.ok) {
-    const errorBody = await nestRes.json().catch(() => ({
-      statusCode: nestRes.status,
-      message: nestRes.statusText || "Upstream error",
-      error: "Bad Gateway",
-    }));
-    const res = NextResponse.json(errorBody, { status: nestRes.status });
-    res.cookies.delete({ name: REFRESH_TOKEN_COOKIE_NAME, path: "/api/auth" });
+  if (!result.ok) {
+    const res = NextResponse.json(result.body, { status: result.status });
+    if (result.clearCookies) {
+      res.cookies.delete({
+        name: REFRESH_TOKEN_COOKIE_NAME,
+        path: REFRESH_TOKEN_COOKIE_OPTIONS.path,
+      });
+      res.cookies.delete({
+        name: ACCESS_TOKEN_COOKIE_NAME,
+        path: ACCESS_TOKEN_COOKIE_OPTIONS.path,
+      });
+    }
     return res;
   }
 
-  const data: { accessToken: string } = await nestRes.json();
+  const res = NextResponse.json({ accessToken: result.accessToken });
 
-  const newRefreshToken = nestRes.headers
-    .getSetCookie()
-    .map((header) => extractCookieValue(header, REFRESH_TOKEN_COOKIE_NAME))
-    .find((value): value is string => value !== null);
-
-  if (!newRefreshToken) {
-    return NextResponse.json(
-      {
-        statusCode: 502,
-        message: "Auth service did not return a session",
-        error: "Bad Gateway",
-      },
-      { status: 502 },
-    );
-  }
-
-  const res = NextResponse.json(data);
-
-  res.cookies.set(REFRESH_TOKEN_COOKIE_NAME, newRefreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/api/auth",
-    maxAge: REFRESH_TOKEN_MAX_AGE_SECONDS,
-  });
+  res.cookies.set(
+    REFRESH_TOKEN_COOKIE_NAME,
+    result.refreshToken,
+    REFRESH_TOKEN_COOKIE_OPTIONS,
+  );
+  res.cookies.set(
+    ACCESS_TOKEN_COOKIE_NAME,
+    result.accessToken,
+    ACCESS_TOKEN_COOKIE_OPTIONS,
+  );
 
   return res;
 }

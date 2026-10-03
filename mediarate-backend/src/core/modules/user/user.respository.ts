@@ -39,6 +39,13 @@ export class UserRepository {
     });
   }
 
+  public async findOneWithSelect<S extends Prisma.UserSelect>(
+    where: Prisma.UserWhereUniqueInput,
+    select: S,
+  ) {
+    return this.prisma.user.findUnique({ where, select });
+  }
+
   public async findAll(where?: Prisma.UserWhereInput) {
     return this.prisma.user.findMany({
       where: { ...where },
@@ -47,7 +54,7 @@ export class UserRepository {
 
   public async update(id: string, payload: Prisma.UserUpdateInput) {
     try {
-      await this.prisma.user.update({
+      return await this.prisma.user.update({
         where: {
           id,
         },

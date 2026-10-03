@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev  -p 5000 --turbopack",
-    "gen:api-types": "openapi-typescript http://localhost:8080/api/docs-json -o ./src/shared/api/schema.d.ts",
+    "gen:api-types": "openapi-typescript http://localhost:8080/api/docs-json -o ./src/shared/api/types/schema.d.ts",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint"

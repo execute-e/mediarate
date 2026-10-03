@@ -10,6 +10,7 @@
     "dev:nest": "cross-env NODE_ENV=development nest start --watch",
     "prisma:generate": "pnpm prisma generate",
     "prisma:migrate:dev": "pnpm prisma migrate dev",
+    "prisma:migrate:create": "pnpm prisma migrate dev --create-only",
     "prisma:studio": "pnpm prisma studio"
   },
   "dependencies": {
@@ -28,7 +29,8 @@
     "dotenv": "^17.4.2",
     "pg": "^8.22.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

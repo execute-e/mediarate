@@ -34,7 +34,11 @@ export class AuthService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = user;
 
-    return { user: userWithoutPassword, refreshToken, accessToken };
+    return {
+      user: this.userService.withImageUrls(userWithoutPassword),
+      refreshToken,
+      accessToken,
+    };
   }
 
   public async register(dto: CreateUserDto) {

@@ -13,7 +13,7 @@ export function AppLayout({ children, header, footer, sidebar }: AppLayout) {
       {sidebar}
       <div className="flex flex-col min-h-dvh">
         {header}
-        <main className="bg-background overflow-y-auto flex-1 mt-14 sm:mt-16 md:mt-20">
+        <main className="max-w-370 w-full bg-red-10 mx-auto px-5 sm:px-10 overflow-y-auto flex-1 mt-10 sm:mt-12 md:mt-14">
           {children}
         </main>
         {footer}

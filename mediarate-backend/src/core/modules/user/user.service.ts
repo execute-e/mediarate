@@ -13,6 +13,7 @@ import {
   USER_PRIVATE_PROFILE_SELECT,
   USER_PUBLIC_PROFILE_SELECT,
 } from './const/user.const';
+import { UpdateUserDto } from './dto/request/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -22,7 +23,11 @@ export class UserService {
   ) {}
 
   public async create(dto: CreateUserDto) {
-    return this.userRepository.create({ ...dto, role: UserRole.USER });
+    return this.userRepository.create({
+      ...dto,
+      role: UserRole.USER,
+      displayName: dto.username,
+    });
   }
 
   public async findOneById(id: string) {
@@ -40,6 +45,10 @@ export class UserService {
   public async findAll() {
     // here can be added filters for admin page or something similar
     return this.userRepository.findAll();
+  }
+
+  public async updateProfile(userId: string, dto: UpdateUserDto) {
+    return this.userRepository.update(userId, dto);
   }
 
   public async updateUsername(id: string, newUsername: string) {

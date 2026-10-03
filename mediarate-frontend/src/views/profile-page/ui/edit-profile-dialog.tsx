@@ -1,7 +1,11 @@
 "use client";
 
 import { useSession } from "@/src/entities/session";
-import { AvatarUpload, BannerUpload } from "@/src/features/edit-profile";
+import {
+  AvatarUpload,
+  BannerUpload,
+  PublicDataForm,
+} from "@/src/features/edit-profile";
 import {
   Dialog,
   DialogContent,
@@ -32,6 +36,7 @@ export function EditProfileDialog({ ...props }: DialogProps) {
             className="absolute -bottom-12 left-4 border-4 border-popover"
           />
         </div>
+        <PublicDataForm user={session} />
       </DialogContent>
     </Dialog>
   );

@@ -7,6 +7,7 @@ export const BACKEND_ROUTES = {
 
   // * user
   getMe: () => "user/profile",
+  updateProfile: () => "user/profile",
   profile: (username: string) => `user/profile/${username}`,
   updateAvatar: () => "user/avatar",
   updateBanner: () => "user/banner",

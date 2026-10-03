@@ -41,8 +41,11 @@ export function ProfilePage({ username }: ProfilePageProps) {
                 className="w-35 h-35 absolute -bottom-10 left-5"
               />
             </div>
-            <div className="flex items-center gap-6 ml-10">
-              <Typography variant={"h2"}>{data.username}</Typography>
+            <div className="flex items-center justify-between">
+              <div className="flex items-baseline gap-6 ml-10">
+                <Typography variant={"h2"}>{data.displayName}</Typography>
+                <Typography variant={"p"}>{`@${data.username}`}</Typography>
+              </div>
               {isOwner && (
                 <Button
                   variant={"outline"}

@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   FileTypeValidator,
   Get,
@@ -24,6 +25,7 @@ import {
 } from './dto/response/user-response.dto';
 import { AvatarResponseDto } from './dto/response/avatar-response.dto';
 import { BannerResponseDto } from './dto/response/banner-response.dto';
+import { UpdateUserDto } from './dto/request/update-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -43,6 +45,14 @@ export class UserController {
   })
   public async getProfile(@Req() req: Request) {
     return this.userService.getUserProfileById(req.user.userId);
+  }
+
+  // update those parts of profile that dont need to be verified
+  @Auth()
+  @Patch('profile')
+  @ApiOkResponse()
+  public async updateProfile(@Req() req: Request, @Body() dto: UpdateUserDto) {
+    return this.userService.updateProfile(req.user.userId, dto);
   }
 
   @Get('profile/:username')

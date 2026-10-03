@@ -54,7 +54,7 @@ export class UserRepository {
 
   public async update(id: string, payload: Prisma.UserUpdateInput) {
     try {
-      await this.prisma.user.update({
+      return await this.prisma.user.update({
         where: {
           id,
         },

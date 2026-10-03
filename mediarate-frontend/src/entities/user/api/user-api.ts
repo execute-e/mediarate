@@ -1,3 +1,4 @@
+import { PublicDataFormValues } from "@/src/features/edit-profile/model/public-data-schema";
 import { nestApi } from "@/src/shared/api/instances/nest-api";
 import { Schema } from "@/src/shared/api/lib/api-types";
 import { SessionUser } from "@/src/shared/api/types/types";
@@ -36,4 +37,8 @@ export async function updateBanner(file: File) {
     BACKEND_ROUTES.updateBanner(),
     { body: toFormData(file) },
   );
+}
+
+export async function updateProfile(dto: Partial<PublicDataFormValues>) {
+  return nestApi.patch(BACKEND_ROUTES.updateProfile(), { json: dto });
 }

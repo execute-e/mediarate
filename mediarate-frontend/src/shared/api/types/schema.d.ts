@@ -208,6 +208,7 @@ export interface components {
             id: string;
             email: string;
             username: string;
+            displayName: string;
             /** @enum {string} */
             role: "ADMIN" | "USER";
             avatarUrl: string;

@@ -5,6 +5,7 @@ export class UserResponseDto {
   @ApiProperty() id: string;
   @ApiProperty() email: string;
   @ApiProperty() username: string;
+  @ApiProperty() displayName: string;
   @ApiProperty({ enum: UserRole }) role: UserRole;
   @ApiProperty() avatarUrl?: string;
   @ApiProperty() bannerUrl?: string;

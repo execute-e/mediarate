@@ -7,6 +7,7 @@ export const IMAGE_MIME_TYPE_REGEX = /^image\/(jpeg|png|webp)$/;
 export const USER_PUBLIC_PROFILE_SELECT = {
   id: true,
   username: true,
+  displayName: true,
   avatarUrl: true,
   bannerUrl: true,
   createdAt: true,

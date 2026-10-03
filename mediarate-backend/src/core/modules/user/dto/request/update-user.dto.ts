@@ -1,6 +1,6 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsDisplayName } from '@/shared/decorators/is-display-name.decorator';
 
 export class UpdateUserDto {
-  @IsNotEmpty()
-  password: string;
+  @IsDisplayName()
+  displayName?: string;
 }

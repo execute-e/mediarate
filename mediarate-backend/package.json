@@ -10,6 +10,7 @@
     "dev:nest": "cross-env NODE_ENV=development nest start --watch",
     "prisma:generate": "pnpm prisma generate",
     "prisma:migrate:dev": "pnpm prisma migrate dev",
+    "prisma:migrate:create": "pnpm prisma migrate dev --create-only",
     "prisma:studio": "pnpm prisma studio"
   },
   "dependencies": {

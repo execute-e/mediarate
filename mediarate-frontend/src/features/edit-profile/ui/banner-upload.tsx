@@ -21,7 +21,7 @@ export function BannerUpload({ user, className }: BannerUploadProps) {
       accept={PROFILE_IMAGE_ACCEPT}
       isLoading={isPending}
       onFileSelect={(file) => mutate(file)}
-      className={cn("h-32 w-full rounded-md bg-muted", className)}
+      className={cn("aspect-3/1 w-full rounded-md bg-muted", className)}
     >
       {user.bannerUrl && (
         <Image

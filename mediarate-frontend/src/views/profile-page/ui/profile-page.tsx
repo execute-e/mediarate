@@ -24,8 +24,8 @@ export function ProfilePage({ username }: ProfilePageProps) {
     <div className="mt-5">
       {data && (
         <>
-          <div className="flex flex-col gap-15">
-            <div className="relative bg-muted w-full h-70 rounded-sm border border-border">
+          <div className="flex flex-col gap-12 sm:gap-15">
+            <div className="relative bg-muted w-full aspect-3/1 max-h-70 rounded-sm border border-border">
               {data.bannerUrl && (
                 <Image
                   src={data.bannerUrl}
@@ -38,11 +38,11 @@ export function ProfilePage({ username }: ProfilePageProps) {
               )}
               <UserAvatar
                 userData={data}
-                className="w-35 h-35 absolute -bottom-10 left-5"
+                className="size-20 sm:size-35 absolute -bottom-10 left-4 sm:left-5"
               />
             </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-baseline gap-6 ml-10">
+            <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 ml-4 sm:ml-10">
+              <div className="flex flex-wrap items-baseline gap-x-6 wrap-anywhere">
                 <Typography variant={"h2"}>{data.displayName}</Typography>
                 <Typography variant={"p"}>{`@${data.username}`}</Typography>
               </div>
@@ -62,7 +62,9 @@ export function ProfilePage({ username }: ProfilePageProps) {
           />
         </>
       )}
-      {isLoading && <Skeleton className="w-full h-50"></Skeleton>}
+      {isLoading && (
+        <Skeleton className="w-full aspect-3/1 max-h-70"></Skeleton>
+      )}
       {error && <Typography>{`Error: ${error.message}`}</Typography>}
     </div>
   );

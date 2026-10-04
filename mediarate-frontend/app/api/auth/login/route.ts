@@ -13,5 +13,5 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  return proxyAuthSession("auth/login", dto);
+  return proxyAuthSession("auth/login", dto, req.headers);
 }

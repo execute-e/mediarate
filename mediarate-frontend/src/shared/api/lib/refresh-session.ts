@@ -1,6 +1,7 @@
 import { NEST_API_URL } from "../config";
 import { REFRESH_TOKEN_COOKIE_NAME } from "../const/cookies-const";
 import { extractCookieValue } from "@/src/shared/lib/cookie/cookie-utils";
+import { getProxyHeader } from "./proxy-headers";
 
 export type RefreshSessionResult =
   | { ok: true; accessToken: string; refreshToken: string }
@@ -8,10 +9,14 @@ export type RefreshSessionResult =
 
 export async function refreshSession(
   refreshToken: string,
+  incomingHeaders: Headers,
 ): Promise<RefreshSessionResult> {
   const nestRes = await fetch(`${NEST_API_URL}auth/refresh`, {
     method: "POST",
-    headers: { Cookie: `${REFRESH_TOKEN_COOKIE_NAME}=${refreshToken}` },
+    headers: {
+      Cookie: `${REFRESH_TOKEN_COOKIE_NAME}=${refreshToken}`,
+      ...getProxyHeader(incomingHeaders),
+    },
   });
 
   if (!nestRes.ok) {
@@ -20,7 +25,13 @@ export async function refreshSession(
       message: nestRes.statusText || "Upstream error",
       error: "Bad Gateway",
     }));
-    return { ok: false, status: nestRes.status, body, clearCookies: true };
+    // only 401 means the refresh token is invalid; on 429/5xx the session is still alive, keep cookies
+    return {
+      ok: false,
+      status: nestRes.status,
+      body,
+      clearCookies: nestRes.status === 401,
+    };
   }
 
   const data: { accessToken: string } = await nestRes.json();

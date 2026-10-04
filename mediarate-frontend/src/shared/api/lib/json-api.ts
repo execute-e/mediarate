@@ -15,16 +15,22 @@ interface JsonFetchWrapperParams {
 interface AuthOptions {
   getToken: () => MaybePromise<string | null | undefined>;
   onUnauthorized?: () => MaybePromise<string | null | undefined>;
+  // extra headers added to every request (e.g. client ip when requesting from the server)
+  getHeaders?: () => MaybePromise<HeadersInit | undefined>;
 }
 
 const buildHeaders = (
   json: unknown,
   userHeaders?: HeadersInit,
   token?: string | null,
+  extraHeaders?: HeadersInit,
 ) => {
   const headers = new Headers();
   if (json !== undefined) headers.set("Content-Type", "application/json");
   if (token) headers.set("Authorization", `Bearer ${token}`);
+  if (extraHeaders) {
+    new Headers(extraHeaders).forEach((value, key) => headers.set(key, value));
+  }
   if (userHeaders) {
     new Headers(userHeaders).forEach((value, key) => headers.set(key, value));
   }
@@ -44,10 +50,11 @@ async function jsonFetchWrapper<T>(
 ): Promise<T> {
   const { headers, body, json, ...rest } = options;
   const token = await auth?.getToken();
+  const extraHeaders = await auth?.getHeaders?.();
 
   const res = await fetch(`${baseUrl}${path}`, {
     ...rest,
-    headers: buildHeaders(json, headers, token),
+    headers: buildHeaders(json, headers, token, extraHeaders),
     body: json ? JSON.stringify(json) : body,
     method,
   });

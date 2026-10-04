@@ -13,5 +13,5 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  return proxyAuthSession("auth/register", dto);
+  return proxyAuthSession("auth/register", dto, req.headers);
 }

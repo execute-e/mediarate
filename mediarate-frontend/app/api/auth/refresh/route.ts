@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import {
   ACCESS_TOKEN_COOKIE_NAME,
@@ -8,7 +8,7 @@ import {
 } from "@/src/shared/api/const/cookies-const";
 import { refreshSession } from "@/src/shared/api/lib/refresh-session";
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   const refreshToken = (await cookies()).get(REFRESH_TOKEN_COOKIE_NAME)?.value;
 
   if (!refreshToken) {
@@ -22,7 +22,7 @@ export async function POST() {
     );
   }
 
-  const result = await refreshSession(refreshToken);
+  const result = await refreshSession(refreshToken, req.headers);
 
   if (!result.ok) {
     const res = NextResponse.json(result.body, { status: result.status });

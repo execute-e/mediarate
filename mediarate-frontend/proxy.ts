@@ -16,7 +16,7 @@ export async function proxy(request: NextRequest) {
   if (!refreshToken) {
     return NextResponse.next();
   }
-  const result = await refreshSession(refreshToken);
+  const result = await refreshSession(refreshToken, request.headers);
 
   if (!result.ok) {
     const response = NextResponse.next();

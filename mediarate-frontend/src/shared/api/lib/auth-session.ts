@@ -8,11 +8,19 @@ import {
   REFRESH_TOKEN_COOKIE_NAME,
   REFRESH_TOKEN_COOKIE_OPTIONS,
 } from "../const/cookies-const";
+import { getProxyHeader } from "./proxy-headers";
 
-export async function proxyAuthSession(nestPath: string, dto: unknown) {
+export async function proxyAuthSession(
+  nestPath: string,
+  dto: unknown,
+  incomingHeaders: Headers,
+) {
   const nestRes = await fetch(`${NEST_API_URL}${nestPath}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...getProxyHeader(incomingHeaders),
+    },
     body: JSON.stringify(dto),
   });
 

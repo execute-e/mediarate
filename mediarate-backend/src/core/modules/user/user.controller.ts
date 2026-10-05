@@ -26,6 +26,8 @@ import {
 import { AvatarResponseDto } from './dto/response/avatar-response.dto';
 import { BannerResponseDto } from './dto/response/banner-response.dto';
 import { UpdateUserDto } from './dto/request/update-user.dto';
+import { Throttle } from '@nestjs/throttler';
+import { IMAGE_UPLOAD_THROTTLE } from '@/shared/const/throttle.const';
 
 @Controller('user')
 export class UserController {
@@ -65,6 +67,7 @@ export class UserController {
   }
 
   @Auth()
+  @Throttle(IMAGE_UPLOAD_THROTTLE)
   @Patch('avatar')
   @UseInterceptors(FileInterceptor('file'))
   @ApiOkResponse({
@@ -87,6 +90,7 @@ export class UserController {
   }
 
   @Auth()
+  @Throttle(IMAGE_UPLOAD_THROTTLE)
   @Patch('banner')
   @UseInterceptors(FileInterceptor('file'))
   @ApiOkResponse({

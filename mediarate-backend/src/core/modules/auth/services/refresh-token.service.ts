@@ -1,22 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { MyJwtService } from '../../jwt/my-jwt.service';
 import { AuthRepository } from '../auth.repository';
-import { createHash } from 'crypto';
 import {
   ACCESS_TOKEN_EXPIRES_AT,
   REFRESH_TOKEN_EXPIRES_AT,
 } from '../const/tokens';
 import { UserAuthPayload } from '../../jwt/types/user-auth-payload';
+import { hashToken } from '@/shared/utils/token';
 @Injectable()
 export class RefreshTokenService {
   public constructor(
     private readonly myJwtService: MyJwtService,
     private readonly authRepository: AuthRepository,
   ) {}
-
-  private hashToken(token: string): string {
-    return createHash('sha256').update(token).digest('hex');
-  }
 
   public async createPair(payload: UserAuthPayload) {
     const accessToken = await this.myJwtService.generate(
@@ -30,7 +26,7 @@ export class RefreshTokenService {
 
     await this.authRepository.createRefreshToken(
       payload.userId,
-      this.hashToken(refreshToken),
+      hashToken(refreshToken),
       new Date(Date.now() + REFRESH_TOKEN_EXPIRES_AT),
     );
 
@@ -43,7 +39,7 @@ export class RefreshTokenService {
   }
 
   public async revoke(refreshToken: string) {
-    return this.authRepository.revokeRefreshToken(this.hashToken(refreshToken));
+    return this.authRepository.revokeRefreshToken(hashToken(refreshToken));
   }
 
   public async validate(token: string): Promise<UserAuthPayload | null> {
@@ -51,7 +47,7 @@ export class RefreshTokenService {
     if (!payload) return null;
 
     const record = await this.authRepository.findValidRefreshToken(
-      this.hashToken(token),
+      hashToken(token),
     );
     if (!record) return null;
 

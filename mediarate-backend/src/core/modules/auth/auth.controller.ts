@@ -19,6 +19,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthResponse } from './dto/response/auth-response.dto';
+import { Throttle } from '@nestjs/throttler';
+import {
+  LOGIN_THROTTLE,
+  REGISTER_THROTTLE,
+} from '@/shared/const/throttle.const';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -28,6 +33,7 @@ export class AuthController {
     private readonly cookieService: CookieService,
   ) {}
 
+  @Throttle(REGISTER_THROTTLE)
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   @ApiCreatedResponse({
@@ -43,6 +49,7 @@ export class AuthController {
     return data;
   }
 
+  @Throttle(LOGIN_THROTTLE)
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({

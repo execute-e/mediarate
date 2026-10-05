@@ -1,20 +1,37 @@
 import { PrismaService } from '@/config/db/PrismaService/prisma.service';
 import { Prisma } from '@/generated/prisma/client';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  isRecordNotFound,
+  isUniqueViolation,
+} from '@/shared/utils/prisma-errors';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 @Injectable()
 export class UserRepository {
   public constructor(private readonly prisma: PrismaService) {}
 
   public async create(dto: Prisma.UserCreateInput) {
-    const { username, ...rest } = dto;
+    try {
+      const { username, ...rest } = dto;
 
-    return this.prisma.user.create({
-      data: {
-        username: username.trim(),
-        ...rest,
-      },
-    });
+      return await this.prisma.user.create({
+        data: {
+          username: username.trim(),
+          ...rest,
+        },
+      });
+    } catch (e) {
+      if (isUniqueViolation(e)) {
+        throw new ConflictException(
+          'User with this username or email already exists!',
+        );
+      }
+      throw e;
+    }
   }
 
   public async findById(id: string) {
@@ -63,10 +80,8 @@ export class UserRepository {
         },
       });
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        if (e.code === 'P2025') {
-          throw new NotFoundException(`User with ID: ${id} not found`);
-        }
+      if (isRecordNotFound(e)) {
+        throw new NotFoundException(`User with ID: ${id} not found`);
       }
       throw e;
     }
@@ -78,10 +93,8 @@ export class UserRepository {
         where: { id },
       });
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        if (e.code === 'P2025') {
-          throw new NotFoundException(`User with ID: ${id} not found`);
-        }
+      if (isRecordNotFound(e)) {
+        throw new NotFoundException(`User with ID: ${id} not found`);
       }
       throw e;
     }

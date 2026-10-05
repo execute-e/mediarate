@@ -6,6 +6,7 @@ import { ErrorBoundary } from "@/src/shared/components/error-boundary/error-boun
 import { Footer } from "@/src/widgets/footer/ui/footer";
 import { Header } from "@/src/widgets/header/ui/header";
 import { AppSidebar } from "@/src/widgets/sidebar";
+import { RateLimitBanner } from "@/src/widgets/rate-limit-banner";
 import { usePathname } from "next/navigation";
 import React from "react";
 import { Toaster } from "sonner";
@@ -13,9 +14,11 @@ import { Toaster } from "sonner";
 export function AppPageLayout({
   children,
   userData,
+  rateLimited = false,
 }: {
   children: React.ReactNode;
   userData?: SessionUser | null;
+  rateLimited?: boolean;
 }) {
   const pathname = usePathname();
 
@@ -30,6 +33,7 @@ export function AppPageLayout({
         footer={<Footer />}
         sidebar={<AppSidebar />}
       >
+        {rateLimited && <RateLimitBanner />}
         <ErrorBoundary resetKey={pathname}>{children}</ErrorBoundary>
       </AppLayout>
       <Toaster />

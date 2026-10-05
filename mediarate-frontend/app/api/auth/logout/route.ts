@@ -5,16 +5,20 @@ import {
   REFRESH_TOKEN_COOKIE_NAME,
   REFRESH_TOKEN_COOKIE_OPTIONS,
 } from "@/src/shared/api/const/cookies-const";
+import { getProxyHeader } from "@/src/shared/api/lib/proxy-headers";
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   const refreshToken = (await cookies()).get(REFRESH_TOKEN_COOKIE_NAME)?.value;
 
   if (refreshToken) {
     await fetch(`${NEST_API_URL}auth/logout`, {
       method: "POST",
-      headers: { Cookie: `${REFRESH_TOKEN_COOKIE_NAME}=${refreshToken}` },
+      headers: {
+        Cookie: `${REFRESH_TOKEN_COOKIE_NAME}=${refreshToken}`,
+        ...getProxyHeader(req.headers),
+      },
     }).catch((err) => {
       console.error("Failed to reach Nest /auth/logout:", err);
     });

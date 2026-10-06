@@ -25,7 +25,6 @@ export async function refreshSession(
       message: nestRes.statusText || "Upstream error",
       error: "Bad Gateway",
     }));
-    // only 401 means the refresh token is invalid; on 429/5xx the session is still alive, keep cookies
     return {
       ok: false,
       status: nestRes.status,

@@ -15,7 +15,6 @@ interface JsonFetchWrapperParams {
 interface AuthOptions {
   getToken: () => MaybePromise<string | null | undefined>;
   onUnauthorized?: () => MaybePromise<string | null | undefined>;
-  // extra headers added to every request (e.g. client ip when requesting from the server)
   getHeaders?: () => MaybePromise<HeadersInit | undefined>;
 }
 

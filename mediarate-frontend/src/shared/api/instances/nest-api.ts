@@ -36,7 +36,6 @@ export const nestApi = createApi(NEST_PUBLIC_API_URL, {
   },
   onUnauthorized: () =>
     typeof window === "undefined" ? null : refreshAccessToken(),
-  // SSR requests come to Nest from the Next server ip, so forward the real client ip
   getHeaders: async () => {
     if (typeof window !== "undefined") return undefined;
     const { headers } = await import("next/headers");
